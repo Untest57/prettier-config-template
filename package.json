@@ -2,6 +2,9 @@
   "name": "@untest57/prettier-config",
   "version": "1.0.0",
   "license": "MIT",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "files": [
     "base/",
     "full/",
