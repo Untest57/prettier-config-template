@@ -34,7 +34,7 @@ jobs:
           echo "Previous version: $PREVIOUS_VERSION"
           
           # Compare versions and skip publish if current version is not greater than the previous version
-          if [ "$(echo -e "$CURRENT_VERSION\n$PREVIOUS_VERSION" | sort -V | tail -n 1)" == "$CURRENT_VERSION" ]; then
+          if [ "$CURRENT_VERSION" == "$PREVIOUS_VERSION" ]; then
             echo "::error::Version has not increased. Skipping publish."
             exit 1
           fi
