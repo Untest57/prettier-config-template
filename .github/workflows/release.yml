@@ -58,4 +58,4 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
       - name: Publish package
-        run: yarn npm publish
+        run: yarn npm publish --access public
