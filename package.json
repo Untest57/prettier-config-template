@@ -1,0 +1,30 @@
+{
+  "name": "@untest57/prettier-config",
+  "version": "1.0.0",
+  "license": "MIT",
+  "files": [
+    "base/",
+    "full/",
+    "package.json",
+    "README.md",
+    "UPDATE_WORKFLOW.md"
+  ],
+  "type": "commonjs",
+  "main": "./full/base.config.js",
+  "exports": {
+    ".": "./full/base.config.js",
+    "./tailwind": "./full/tailwind.config.js"
+  },
+  "keywords": [
+    "prettier",
+    "prettier-config",
+    "tailwind",
+    "import-sort"
+  ],
+  "peerDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
+    "prettier": "^3.0.0",
+    "prettier-plugin-tailwindcss": "^0.5.6"
+  },
+  "packageManager": "yarn@4.8.1"
+}

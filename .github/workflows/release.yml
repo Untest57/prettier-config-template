@@ -1,0 +1,59 @@
+name: Release Workflow
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "package.json"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+      - name: Check if version has changed
+        id: version-check
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          PREVIOUS_VERSION=$(git show HEAD~1:package.json | node -p "const data = require('fs').readFileSync('/dev/stdin', 'utf8'); data.trim() ? JSON.parse(data).version : 'No version found'")
+
+          echo "Current version: $CURRENT_VERSION"
+          if [ "$PREVIOUS_VERSION" == "No version found" ]; then
+            exit 0
+          fi
+          
+          echo "Previous version: $PREVIOUS_VERSION"
+          
+          # Compare versions and skip publish if current version is not greater than the previous version
+          if [ "$(echo -e "$CURRENT_VERSION\n$PREVIOUS_VERSION" | sort -V | tail -n 1)" == "$CURRENT_VERSION" ]; then
+            echo "::error::Version has not increased. Skipping publish."
+            exit 1
+          fi
+
+      - name: Cache Node modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.yarn/cache
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+            ${{ runner.os }}-
+      - name: Setup .yarnrc.yml
+        run: |
+          REPO_OWNER=$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
+          yarn config set npmScopes.${REPO_OWNER}.npmPublishRegistry "https://npm.pkg.github.com"
+          yarn config set npmScopes.${REPO_OWNER}.npmAlwaysAuth true
+          yarn config set npmScopes.${REPO_OWNER}.npmAuthToken $NPM_AUTH_TOKEN
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: Install dependencies
+        run: yarn install --immutable
+      - name: Publish package
+        run: yarn npm publish
