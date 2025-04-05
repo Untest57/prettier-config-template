@@ -3,6 +3,7 @@ module.exports = {
 
   // https://github.com/trivago/prettier-plugin-sort-imports?tab=readme-ov-file#apis
   importOrder: [
+    '^node:(.*)$',
     '^react(-dom.+)?$',
     '^next(/.*)?$',
     'next-themes',
